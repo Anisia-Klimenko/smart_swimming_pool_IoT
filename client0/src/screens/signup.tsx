@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, Container, Row, Col, Card, InputGroup, FormControl} from "react-bootstrap";
 
-class Signin extends React.Component {
+class Signup extends React.Component {
 	render() {
 		return (
 			<Container className='pt-5 container-fluid text-center d-flex flex-column'>
@@ -16,17 +16,18 @@ class Signin extends React.Component {
 						<Card.Text className=''>
 						<InputGroup className="mt-4 mb-2">
 							<FormControl
-								placeholder="Введите логин"/>
+								placeholder="Введите email"/>
 							</InputGroup>
-							<InputGroup className="mb-4">
+							<InputGroup className="mb-2">
 							<FormControl
 								placeholder="Введите пароль"/>
 							</InputGroup>
-							<Col className='mt-3'><Link to='/'><Button variant="primary" className='shadow-lg'>
-								Войти
-							</Button></Link></Col>
-							<Col className='mt-2'><Link to='/signUp'><Button variant="link">
-								Зарегистрироваться
+							<InputGroup className="mb-4">
+							<FormControl
+								placeholder="Введите пароль ещё раз"/>
+							</InputGroup>
+							<Col className='mt-3'><Link to='/signIn'><Button variant="primary" className='shadow-lg'>
+								Регистрация
 							</Button></Link></Col>
 						</Card.Text>
 					</Card.Body></Card>
@@ -37,4 +38,4 @@ class Signin extends React.Component {
 	}
 }
 
-export default Signin;
+export default Signup;
