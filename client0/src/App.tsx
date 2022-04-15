@@ -3,16 +3,16 @@ import {Routes, Route} from 'react-router-dom';
 
 import './App.css';
 
-import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Splash from './screens/splash'
+import Signin from './screens/signin'
 
 function App() {
   return (
     <Routes>
       <Route path='/' element={<Splash/>}/>
-      {/* <Button>Hello</Button> */}
+      <Route path='signIn' element={<Signin/>}/>
     </Routes>
   );
 }
