@@ -6,7 +6,7 @@ import './App.css';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Splash from './screens/splash/splash'
+import Splash from './screens/splash'
 
 function App() {
   return (
