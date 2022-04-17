@@ -22,7 +22,7 @@ class Signin extends React.Component {
 							<FormControl
 								placeholder="Введите пароль"/>
 							</InputGroup>
-							<Col className='mt-3'><Link to='/'><Button variant="primary" className='shadow-lg'>
+							<Col className='mt-3'><Link to='/sportsman'><Button variant="primary" className='shadow-lg'>
 								Войти
 							</Button></Link></Col>
 							<Col className='mt-2'><Link to='/signUp'><Button variant="link">
