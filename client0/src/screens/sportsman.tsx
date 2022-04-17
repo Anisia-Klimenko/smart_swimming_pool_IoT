@@ -5,10 +5,10 @@ import '../App.css'
 import {Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal} from "react-bootstrap";
 
 function Modalwin() {
-	const [show, setShow] = useState(false);
+	const [showHistory, setShowHistory] = useState(false);
+	const [showAchiv, setShowAchiv] = useState(false);
+	const [showCreate, setShowCreate] = useState(false);
 	
-	const handleClose = () => setShow(false);
-	const handleShow = () => setShow(true);
 		return(	<Container className='pt-5 container-fluid text-center d-flex flex-column'>
 			<Row className="mt-5 justify-content-md-center align-items-center flex-fill">
 				<Col md='6' className='pt-5'>
@@ -34,9 +34,9 @@ function Modalwin() {
 							<Link to='/signIn'><Button variant="outline-primary" className='shadow-lg'>
 								Назад
 							</Button></Link>
-							<Link to='/signIn'><Button variant="primary" className='shadow-lg'>
+							<Button variant="primary" className='shadow-lg' onClick={() => setShowCreate(true)}>
 								Создать
-							</Button></Link>
+							</Button>
 						</Stack>
 						</Card.Text>
 					</Card.Body></Card>
@@ -48,10 +48,10 @@ function Modalwin() {
 						</Card.Title>
 						<Card.Text className=''>
 							<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
-								<Button variant="outline-primary" className='shadow-lg' onClick={handleShow}>
+								<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(true)}>
 									История тренировок
 								</Button>
-								<Button variant="outline-primary" className='shadow-lg'>
+								<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(true)}>
 									Достижения
 								</Button>
 							</Stack>
@@ -82,9 +82,10 @@ function Modalwin() {
 					</Card.Body></Card>
 				</Col>
 			</Row>
+			{/* Модальное окно - история тренировок */}
 			<Modal 
-				show={show} 
-				onHide={handleClose} 
+				show={showHistory} 
+				onHide={() => setShowHistory(false)} 
 				size="lg"
       			aria-labelledby="contained-modal-title-vcenter"
      	 		centered>
@@ -151,7 +152,75 @@ function Modalwin() {
 				</Table>
 				</Modal.Body>
 				<Modal.Footer>
-					<Button variant="outline-primary" onClick={handleClose}>Закрыть</Button>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(false)}>Закрыть</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - достижения */}
+			<Modal 
+				show={showAchiv} 
+				onHide={() => setShowAchiv(false)} 
+      			aria-labelledby="contained-modal-title-vcenter"
+     	 		centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+					<h4>Достижения</h4>
+					<h6>Достоевский Федор Михайлович</h6>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+				<Table striped bordered hover className="justify-content-start">
+				<tbody>
+					<tr>
+					<td colSpan={2}>Дистанция, км</td>
+					<td>0,25</td>
+					</tr>
+					<tr>
+					<td colSpan={2}>Тренировки</td>
+					<td>4</td>
+					</tr>
+					<tr>
+					<td colSpan={2}>Врема, мин</td>
+					<td>327</td>
+					</tr>
+					<tr>
+					<td colSpan={2}>Средний пульс</td>
+					<td>97</td>
+					</tr>
+				</tbody>
+				</Table>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(false)}>Закрыть</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - добавить спортсмена */}
+			<Modal 
+				show={showCreate} 
+				onHide={() => setShowCreate(false)} 
+      			aria-labelledby="contained-modal-title-vcenter"
+     	 		centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+					<h4>Добавить спортсмена</h4>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className='m-3'>
+				<InputGroup>
+					<FormControl placeholder="Введите ФИО"/>
+				</InputGroup>
+				<InputGroup className="mt-4">
+					<FormControl placeholder="Введите возраст"/>
+				</InputGroup>
+				<InputGroup className="mt-4">
+					<FormControl placeholder="Введите рост (см)"/>
+				</InputGroup>
+				<InputGroup className="mt-4">
+					<FormControl placeholder="Введите вес (кг)"/>
+				</InputGroup>
+				</Modal.Body>
+				<Modal.Footer className='justify-content-between'>
+						<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowCreate(false)}>Закрыть</Button>
+						<Button variant="primary" className='shadow-lg' onClick={() => setShowCreate(false)}>Добавить</Button>
 				</Modal.Footer>
 			</Modal>
 		</Container>);
