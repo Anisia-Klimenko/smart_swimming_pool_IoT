@@ -13,7 +13,7 @@ class Signup extends React.Component {
 						<Card.Title className='pt-2 pb-2'>
 							SMART SWIMMING POOL
 						</Card.Title>
-						<Card.Text className=''>
+						<Card.Text>
 						<InputGroup className="mt-4 mb-2">
 							<FormControl
 								placeholder="Введите email"/>

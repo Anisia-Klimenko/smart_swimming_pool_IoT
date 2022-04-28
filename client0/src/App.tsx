@@ -9,6 +9,7 @@ import Splash from './screens/splash'
 import Signin from './screens/signin'
 import Signup from './screens/signup';
 import Sportsman from './screens/sportsman';
+import Training from './screens/training';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path='/signIn' element={<Signin/>}/>
       <Route path='/signUp' element={<Signup/>}/>
       <Route path='/sportsman' element={<Sportsman/>}/>
+      <Route path='/training' element={<Training/>}/>
     </Routes>
   );
 }

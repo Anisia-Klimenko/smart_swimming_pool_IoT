@@ -28,6 +28,16 @@
   height: 190px;
   overflow-y: scroll;
 }
+
+.table-scroll {
+  height: 240px;
+  overflow-y: scroll;
+}
+
+.table-scroll-sm {
+  height: 190px;
+  overflow-y: scroll;
+}
 /* .App-link {
   color: #61dafb;
 }
