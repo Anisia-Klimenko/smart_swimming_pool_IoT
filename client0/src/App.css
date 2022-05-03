@@ -24,6 +24,10 @@
   color: white;
 }
 
+.card-height {
+  height: 300px;
+}
+
 .listgroup-scroll {
   height: 190px;
   overflow-y: scroll;
@@ -35,8 +39,12 @@
 }
 
 .table-scroll-sm {
-  height: 190px;
+  height: 230px;
   overflow-y: scroll;
+}
+
+.table-size {
+  height: 180px;
 }
 /* .App-link {
   color: #61dafb;

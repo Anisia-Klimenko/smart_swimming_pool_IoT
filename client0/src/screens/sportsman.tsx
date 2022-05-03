@@ -56,7 +56,7 @@ function SportsmanWin() {
 								Достижения
 							</Button>
 						</Stack>
-						<div className='table-scroll-sm'>
+						<div className='listgroup-scroll'>
 						<Table striped bordered hover className="justify-content-start">
 						<tbody>
 							<tr>

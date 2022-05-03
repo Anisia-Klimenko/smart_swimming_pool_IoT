@@ -90,7 +90,7 @@ function TrainingWin() {
 						</div>
 						<Stack direction="horizontal" className='justify-content-between mt-4'>
 							<Button variant="primary" className='shadow-lg'>Редактировать</Button>
-							<Link to='/training'><Button variant="primary" className='shadow-lg'>Выбрать</Button></Link>
+							<Link to='/startWorkout'><Button variant="primary" className='shadow-lg'>Выбрать</Button></Link>
 						</Stack>
 					</Card.Text>
 				</Card.Body></Card>

@@ -10,6 +10,7 @@ import Signin from './screens/signin'
 import Signup from './screens/signup';
 import Sportsman from './screens/sportsman';
 import Training from './screens/training';
+import StartWorkout from './screens/startWorkout';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
       <Route path='/signUp' element={<Signup/>}/>
       <Route path='/sportsman' element={<Sportsman/>}/>
       <Route path='/training' element={<Training/>}/>
+      <Route path='/startWorkout' element={<StartWorkout/>}/>
     </Routes>
   );
 }
