@@ -2,25 +2,26 @@ import React, {useState} from 'react';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'
-import {Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal} from "react-bootstrap";
+import {Button, Container, Row, Col, Card, Stack, Table, Modal, Offcanvas} from "react-bootstrap";
 
 function StartWorkoutWin() {
 	const [showSportsman, setShowSportsman] = useState(false);
 	const [showTraining, setShowTraining] = useState(false);
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
+	const [showPoolInfo, setShowPoolInfo] = useState(false);
 
 	return (
 		<Container>
 			<Row>
 				<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
-						<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowSportsman(true)}>
-							Достоевский Федор Михайлович
-						</Button>
-						<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(true)}>
-							Кардио рывок
-						</Button>
-					</Stack>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowSportsman(true)}>
+						Достоевский Федор Михайлович
+					</Button>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(true)}>
+						Кардио рывок
+					</Button>
+				</Stack>
 			</Row>
 			<Row className='mb-3'>
 				<Col md='6' className='pt-5'>
@@ -84,8 +85,35 @@ function StartWorkoutWin() {
 					<Button size='lg' variant="success" className='shadow-lg'>Старт</Button>
 					<Button size='lg' variant="danger" className='d-none shadow-lg'>Стоп</Button>
 				</Stack>
-				</Col> 
+				</Col>
+				<Button variant="outline-primary" className='shadow-lg mt-4' onClick={() => setShowPoolInfo(true)}>
+					Бассейн
+				</Button>
 			</Row>
+			<Offcanvas 
+				show={showPoolInfo} 
+				onHide={() => setShowPoolInfo(false)}
+				key='top'
+				placement='top'
+				backdropClassName='table-scroll-sm'>
+				<Offcanvas.Header closeButton>
+					<Offcanvas.Title>Информация о бассейне</Offcanvas.Title>
+				</Offcanvas.Header>
+				<Offcanvas.Body>
+				<Row>
+				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+					<h5>Температура воды</h5>
+					<Button className='shadow-lg' variant='primary'>-</Button>
+					<h1>25</h1>
+					<Button className='shadow-lg' variant='primary'>+</Button>
+					<h5>Температура воздуха</h5>
+					<Button className='shadow-lg' variant='primary'>-</Button>
+					<h1>24</h1>
+					<Button className='shadow-lg' variant='primary'>+</Button>
+				</Stack>
+				</Row> 
+				</Offcanvas.Body>
+			</Offcanvas>
 			<Modal 
 			show={showSportsman} 
 			onHide={() => setShowSportsman(false)} 

@@ -1,12 +1,64 @@
-import React from 'react';
-import {Link} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {Button, Container, Row, Col, Card, InputGroup, FormControl} from "react-bootstrap";
+import { Button, Container, Row, Col, Card, InputGroup, FormControl, Form } from "react-bootstrap";
 
-class Signin extends React.Component {
-	render() {
-		return (
-			<Container className='pt-5 container-fluid text-center d-flex flex-column'>
+let users = [
+	{id: 0, login: "admin", password: "admin"},
+	{id: 1, login: "user", password: "user"},
+	{id: 2, login: "a", password: "a"}
+]
+
+
+let login: string;
+let password: string;
+const handleLoginChange: React.ChangeEventHandler<HTMLInputElement> =
+(event) => {
+	login = event.target.value;
+}
+const handlePasswordChange: React.ChangeEventHandler<HTMLInputElement> =
+(event) => {
+	password = event.target.value;
+}
+
+function LoginPasswd(login: any, passwd: any, users: { id: number; login: string; password: string; }[]) {
+	let logins = users.map(user => user.login);
+	let passwds = users.map(user => user.password);
+	let ids = users.map(user => user.id);
+	for (let i in ids)
+	{
+		if (logins[i] === login && passwds[i] === passwd)
+			return true;
+	}
+	return false;
+}
+
+function SignInWin() {
+	const [validated, setValidated] = useState(false);
+	const navigate = useNavigate();
+
+	const handleSubmit = (event: { currentTarget: any; preventDefault: () => void; stopPropagation: () => void;}) => {
+		if (LoginPasswd(login, password, users) === false) {
+			event.preventDefault();
+			event.stopPropagation();
+		}
+		else
+			setValidated(true);
+	}
+
+	useEffect(() => {
+		if (validated) {
+			navigate('/sportsman')
+		}
+	}, [navigate, validated])
+
+	return (
+		<Container className='pt-5 container-fluid text-center d-flex flex-column'>
+			<Form 
+				noValidate 
+				validated={validated} 
+				onSubmit={handleSubmit} 
+				autoComplete="off">
 			<Row className="mt-5 justify-content-md-center align-items-center flex-fill">
 				<Col md='6' className='pt-5'>
 					<Card className='shadow'><Card.Body className='m-3'>
@@ -14,17 +66,35 @@ class Signin extends React.Component {
 							SMART SWIMMING POOL
 						</Card.Title>
 						<Card.Text>
-						<InputGroup className="mt-4 mb-2">
+						<Form.Group className="mt-4 mb-2">
+						<InputGroup hasValidation>
+							<Form.Control
+								placeholder="Введите логин"
+								id="login"
+								type="text"
+              					onChange={handleLoginChange}
+								required/>
+							<Form.Control.Feedback type="invalid">
+								Введите логин
+							</Form.Control.Feedback>
+						</InputGroup>
+						</Form.Group>
+						<Form.Group className="mb-4">
+							<InputGroup hasValidation>
 							<FormControl
-								placeholder="Введите логин"/>
+								placeholder="Введите пароль"
+								id="password"
+								type="text"
+              					onChange={handlePasswordChange}
+								required/>
+							<Form.Control.Feedback type="invalid">
+								Введите пароль
+							</Form.Control.Feedback>
 							</InputGroup>
-							<InputGroup className="mb-4">
-							<FormControl
-								placeholder="Введите пароль"/>
-							</InputGroup>
-							<Col className='mt-3'><Link to='/sportsman'><Button variant="primary" className='shadow-lg'>
+						</Form.Group>
+							<Col className='mt-3'><Button variant="primary" className='shadow-lg' type='submit'>
 								Войти
-							</Button></Link></Col>
+							</Button></Col>
 							<Col className='mt-2'><Link to='/signUp'><Button variant="link">
 								Зарегистрироваться
 							</Button></Link></Col>
@@ -32,7 +102,16 @@ class Signin extends React.Component {
 					</Card.Body></Card>
 				</Col>
 			</Row>
+			</Form>
 		</Container>
+
+	)
+}
+
+class Signin extends React.Component {
+	render() {
+		return (
+			<SignInWin/>
 		)
 	}
 }

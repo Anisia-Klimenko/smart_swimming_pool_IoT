@@ -16,7 +16,7 @@ class Signup extends React.Component {
 						<Card.Text>
 						<InputGroup className="mt-4 mb-2">
 							<FormControl
-								placeholder="Введите email"/>
+								placeholder="Введите логин"/>
 							</InputGroup>
 							<InputGroup className="mb-2">
 							<FormControl
