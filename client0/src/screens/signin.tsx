@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Container, Row, Col, Card, InputGroup, FormControl, Form, Alert } from "react-bootstrap";
-import { users } from '../emulation'
+import { users } from '../emulation';
 
 let login: string;
 let password: string;
@@ -33,7 +33,6 @@ function SignInWin() {
 	const navigate = useNavigate();
 
 	const handleSubmit = (event: { currentTarget: any; preventDefault: () => void; stopPropagation: () => void;}) => {
-		let error;
 		if (LoginPasswd(login, password, users) === false) {
 			event.preventDefault();
 			// setValidated(false);
