@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button, Container, Row, Col, Card, InputGroup, FormControl, Form } from "react-bootstrap";
-
-let users = [
-	{id: 0, login: "admin", password: "admin"},
-	{id: 1, login: "user", password: "user"},
-	{id: 2, login: "a", password: "a"}
-]
-
+import { Button, Container, Row, Col, Card, InputGroup, FormControl, Form, Alert } from "react-bootstrap";
+import { users } from '../emulation'
 
 let login: string;
 let password: string;
@@ -35,22 +29,32 @@ function LoginPasswd(login: any, passwd: any, users: { id: number; login: string
 
 function SignInWin() {
 	const [validated, setValidated] = useState(false);
+	const [showMessage, setShowMessage] = useState(false);
 	const navigate = useNavigate();
 
 	const handleSubmit = (event: { currentTarget: any; preventDefault: () => void; stopPropagation: () => void;}) => {
+		let error;
 		if (LoginPasswd(login, password, users) === false) {
 			event.preventDefault();
+			// setValidated(false);
 			event.stopPropagation();
+			setShowMessage(true);
 		}
 		else
+		{
+			navigate('/sportsman');
+			setShowMessage(false);
 			setValidated(true);
+		}
 	}
 
-	useEffect(() => {
-		if (validated) {
-			navigate('/sportsman')
-		}
-	}, [navigate, validated])
+	// useEffect(() => {
+	// 	if (validated && LoginPasswd(login, password, users) === true) {
+	// 		navigate('/sportsman')
+	// 	}
+	// 	else 
+	// 		setValidated(false);
+	// }, [navigate, validated])
 
 	return (
 		<Container className='pt-5 container-fluid text-center d-flex flex-column'>
@@ -66,6 +70,12 @@ function SignInWin() {
 							SMART SWIMMING POOL
 						</Card.Title>
 						<Card.Text>
+						<Alert
+							key='danger'
+							variant='danger'
+							show={showMessage}>
+							Неверный логин или пароль
+						</Alert>
 						<Form.Group className="mt-4 mb-2">
 						<InputGroup hasValidation>
 							<Form.Control
@@ -104,15 +114,12 @@ function SignInWin() {
 			</Row>
 			</Form>
 		</Container>
-
 	)
 }
 
 class Signin extends React.Component {
 	render() {
-		return (
-			<SignInWin/>
-		)
+		return (<SignInWin/>)
 	}
 }
 

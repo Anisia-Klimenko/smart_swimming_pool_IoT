@@ -2,11 +2,13 @@ import React from 'react';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {Button, Container, Row, Col, Card, InputGroup, FormControl} from "react-bootstrap";
+import Signin from './signin';
 
-class Signup extends React.Component {
-	render() {
-		return (
-			<Container className='pt-5 container-fluid text-center d-flex flex-column'>
+
+
+function SignupWin() {
+	return (
+		<Container className='pt-5 container-fluid text-center d-flex flex-column'>
 			<Row className="mt-5 justify-content-md-center align-items-center flex-fill">
 				<Col md='6' className='pt-5'>
 					<Card className='shadow'><Card.Body className='m-3'>
@@ -34,6 +36,13 @@ class Signup extends React.Component {
 				</Col>
 			</Row>
 		</Container>
+	)
+}
+
+class Signup extends React.Component {
+	render() {
+		return (
+			<SignupWin/>
 		)
 	}
 }
