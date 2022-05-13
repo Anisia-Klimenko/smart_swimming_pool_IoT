@@ -1,8 +1,8 @@
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'
-import { Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal } from "react-bootstrap";
+import { Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal, Placeholder } from "react-bootstrap";
 import { sportsman } from '../emulation'
 
 type Sport = {
@@ -12,42 +12,102 @@ type Sport = {
 		distance: number; }; 
 	}
 
+const blankSportsman : Sport = {
+		id: 0,
+		name: ' ', 
+		age: 0, 
+		size: 0, 
+		weight: 0, 
+		distance: 0,
+		tquantity: 0,
+		time: 0,
+		avepulse: 0,
+		train_1: {
+			date: "",
+			pulsemax: 0,
+			pulsemin: 0,
+			distance: 0
+		},
+		train_2: {
+			date: "",
+			pulsemax: 0,
+			pulsemin: 0,
+			distance: 0
+    }
+}
+
+let current : Sport;
+
 function SportsmanWin() {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
 	const [showCreate, setShowCreate] = useState(false);
 	const [searchInput, setSearchInput] = useState('');
 	const [searchResult, setSearchResult] = useState(sportsman);
+	const [isActive, setIsActive] = useState(true);
+	const [newSportsman, setNewSportsman] = useState(blankSportsman);
 	const [curr, setCurr] = useState({
 		id: 0,
 		name: ' ', 
-		age: NaN, 
-		size: 1, 
-		weight: 1, 
-		distance: 12,
-		tquantity: 3,
-		time: 120,
-		avepulse: 74,
+		age: 0, 
+		size: 0, 
+		weight: 0, 
+		distance: 0,
+		tquantity: 0,
+		time: 0,
+		avepulse: 0,
 		train_1: {
-			date: "19/02/2021",
-			pulsemax: 102,
-			pulsemin: 71,
-			distance: 3
+			date: "",
+			pulsemax: 0,
+			pulsemin: 0,
+			distance: 0
 		},
 		train_2: {
-			date: "25/11/2021",
-			pulsemax: 130,
-			pulsemin: 79,
-			distance: 7
+			date: "",
+			pulsemax: 0,
+			pulsemin: 0,
+			distance: 0
     }});
 
 	const handleListItem = (man: Sport) => {
+		setIsActive(false);
 		setCurr({id: man.id, name: man.name, age: man.age, size: man.size, weight: man.weight, distance: man.distance, 
 			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, train_1: man.train_1, train_2: man.train_2});
+		current = curr;
 	}
 
 	const handleChangeSearch = (event: { target: { value: React.SetStateAction<string>; }; }) => {
 		setSearchInput(event.target.value);
+	}
+
+	const handleInputChange = (key: string, value: any) => {
+		setNewSportsman(state => ({...state, [key]: value}));
+	}
+
+	const handleCreateSportsman = () => {
+		let ids = Math.max.apply(sportsman.map(man => man.id)) + 1;
+		sportsman.push({id: ids,
+			name: newSportsman.name, 
+			age: newSportsman.age, 
+			size: newSportsman.size, 
+			weight: newSportsman.weight, 
+			distance: 0,
+			tquantity: 0,
+			time: 0,
+			avepulse: 0,
+			train_1: {
+				date: "",
+				pulsemax: 0,
+				pulsemin: 0,
+				distance: 0
+			},
+			train_2: {
+				date: "",
+				pulsemax: 0,
+				pulsemin: 0,
+				distance: 0
+		}});
+		setShowCreate(false);
 	}
 
 	useEffect(() => {
@@ -85,7 +145,7 @@ function SportsmanWin() {
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
-			<Col md='6' className='pt-5'>
+			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'} id="card-table">
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
 						Карточка спортсмена
@@ -121,9 +181,30 @@ function SportsmanWin() {
 						</tbody>
 						</Table>
 						</div>
-						<Col className='mt-4'><Link to='/training'><Button variant="primary" className='shadow-lg'>
+						<Col className='mt-4'><Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => current = curr}>
 							Выбрать
 						</Button></Link></Col>
+					</Card.Text>
+				</Card.Body></Card>
+			</Col>
+			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'} id="card-placeholder">
+				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
+					<Card.Title className='pt-2 pb-2'>
+						Выберите спортсмена
+					</Card.Title>
+					<Card.Text>
+						<Stack direction="horizontal" className='justify-content-between mt-4 mb-4'>
+							<Placeholder.Button variant="outline-primary" xs={5} className='shadow-lg'></Placeholder.Button>
+							<Placeholder.Button variant="outline-primary" xs={4} className='shadow-lg'></Placeholder.Button>
+						</Stack>
+						<Placeholder as={Card.Title} animation="glow">
+							<Placeholder xs={12} className='mb-4'/>{' '}<Placeholder xs={12}className='mb-4'/>{' '}
+							<Placeholder xs={12} className='mb-4'/>{' '}
+							<Placeholder xs={12} className='mb-4'/>{' '}
+						</Placeholder>
+						<Col className='mt-4'>
+							<Placeholder.Button variant="primary" xs={3} className='shadow-lg'></Placeholder.Button>
+						</Col>
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
@@ -228,21 +309,21 @@ function SportsmanWin() {
 			</Modal.Header>
 			<Modal.Body className='m-3'>
 			<InputGroup>
-				<FormControl placeholder="Введите ФИО"/>
+				<FormControl placeholder="Введите ФИО" value={newSportsman.name} onChange={(e) => handleInputChange('name', e.target.value)}/>
 			</InputGroup>
 			<InputGroup className="mt-4">
-				<FormControl placeholder="Введите возраст"/>
+				<FormControl placeholder="Введите возраст" value={newSportsman.age} onChange={(e) => handleInputChange('age', e.target.value)}/>
 			</InputGroup>
 			<InputGroup className="mt-4">
-				<FormControl placeholder="Введите рост (см)"/>
+				<FormControl placeholder="Введите рост (см)" value={newSportsman.size} onChange={(e) => handleInputChange('size', e.target.value)}/>
 			</InputGroup>
 			<InputGroup className="mt-4">
-				<FormControl placeholder="Введите вес (кг)"/>
+				<FormControl placeholder="Введите вес (кг)" value={newSportsman.weight} onChange={(e) => handleInputChange('weight', e.target.value)}/>
 			</InputGroup>
 			</Modal.Body>
 			<Modal.Footer className='justify-content-between'>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowCreate(false)}>Закрыть</Button>
-					<Button variant="primary" className='shadow-lg' onClick={() => setShowCreate(false)}>Добавить</Button>
+					<Button variant="primary" className='shadow-lg' onClick={handleCreateSportsman}>Добавить</Button>
 			</Modal.Footer>
 		</Modal>
 	</Container>);
@@ -255,3 +336,4 @@ class Sportsman extends React.Component {
 }
 
 export default Sportsman;
+export {current};
