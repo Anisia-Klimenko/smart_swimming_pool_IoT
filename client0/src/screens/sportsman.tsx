@@ -1,14 +1,60 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect, SetStateAction } from 'react';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'
-import {Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal} from "react-bootstrap";
+import { Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal } from "react-bootstrap";
+import { sportsman } from '../emulation'
+
+type Sport = {
+	 id: number; name: string; age: number; size: number; weight: number; distance: number; 
+		tquantity: number; time: number; avepulse: number; train_1: { date: string; pulsemax: number; 
+		pulsemin: number; distance: number; }; train_2: { date: string; pulsemax: number; pulsemin: number; 
+		distance: number; }; 
+	}
 
 function SportsmanWin() {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
 	const [showCreate, setShowCreate] = useState(false);
-	
+	const [searchInput, setSearchInput] = useState('');
+	const [searchResult, setSearchResult] = useState(sportsman);
+	const [curr, setCurr] = useState({
+		id: 0,
+		name: ' ', 
+		age: NaN, 
+		size: 1, 
+		weight: 1, 
+		distance: 12,
+		tquantity: 3,
+		time: 120,
+		avepulse: 74,
+		train_1: {
+			date: "19/02/2021",
+			pulsemax: 102,
+			pulsemin: 71,
+			distance: 3
+		},
+		train_2: {
+			date: "25/11/2021",
+			pulsemax: 130,
+			pulsemin: 79,
+			distance: 7
+    }});
+
+	const handleListItem = (man: Sport) => {
+		setCurr({id: man.id, name: man.name, age: man.age, size: man.size, weight: man.weight, distance: man.distance, 
+			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, train_1: man.train_1, train_2: man.train_2});
+	}
+
+	const handleChangeSearch = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+		setSearchInput(event.target.value);
+	}
+
+	useEffect(() => {
+		const result = sportsman.filter(man => man.name.toLowerCase().includes(searchInput.toLowerCase()));
+		setSearchResult(result);
+	}, [searchInput])
+
 	return(
 	<Container className='pt-5 container-fluid text-center d-flex flex-column'>
 		<Row className="mt-5 justify-content-md-center align-items-center flex-fill">
@@ -20,22 +66,19 @@ function SportsmanWin() {
 					<Card.Text>
 					<InputGroup className="mt-4 mb-2">
 						<FormControl
-							placeholder="Поиск"/>
+							placeholder="Поиск"
+							value={searchInput}
+							onChange={handleChangeSearch}/>
 					</InputGroup>
 					<ListGroup className='listgroup-scroll'>
-					<ListGroup.Item action>Достоевский Федор Михайлович</ListGroup.Item>
-					<ListGroup.Item action>Пушкин Александр Сергеевич</ListGroup.Item>
-					<ListGroup.Item action>Набоков Владимир Владимирович</ListGroup.Item>
-					<ListGroup.Item action>Пелевин Виктор Олегович</ListGroup.Item>
-					<ListGroup.Item action>Гоголь Николай Васильевич</ListGroup.Item>
-					<ListGroup.Item action>Булгаков Михаил Афанасьевич</ListGroup.Item>
-					<ListGroup.Item action>Чехов Антон Павлович</ListGroup.Item>
+						{searchResult.map(man => <ListGroup.Item action id={man.id.toString()} onClick={() => handleListItem(man)}>{man.name}</ListGroup.Item>)}
 					</ListGroup>
 					<Stack direction="horizontal" className='justify-content-between mt-4'>
 						<Link to='/signIn'><Button variant="outline-primary" className='shadow-lg'>
 							Назад
 						</Button></Link>
-						<Button variant="primary" className='shadow-lg' onClick={() => setShowCreate(true)}>
+						<Button variant="primary" className='shadow-lg' 
+							onClick={() => setShowCreate(true)}>
 							Создать
 						</Button>
 					</Stack>
@@ -60,20 +103,20 @@ function SportsmanWin() {
 						<Table striped bordered hover className="justify-content-start">
 						<tbody>
 							<tr>
-							<td>ФИО</td>
-							<td colSpan={2}>Достоевский Федор Михайлович</td>
+							<td className='col-md-3'>ФИО</td>
+							<td colSpan={2} id='name'>{curr.name}</td>
 							</tr>
 							<tr>
 							<td>Возраст</td>
-							<td colSpan={2}>27 лет</td>
+							<td colSpan={2} id='age'>{curr.age}</td>
 							</tr>
 							<tr>
 							<td>Рост</td>
-							<td colSpan={2}>178 см</td>
+							<td colSpan={2} id='size'>{curr.size}</td>
 							</tr>
 							<tr>
 							<td>Вес</td>
-							<td colSpan={2}>72 кг</td>
+							<td colSpan={2} id='weight'>{curr.weight}</td>
 							</tr>
 						</tbody>
 						</Table>
@@ -90,11 +133,12 @@ function SportsmanWin() {
 			show={showHistory} 
 			onHide={() => setShowHistory(false)} 
 			aria-labelledby="contained-modal-title-vcenter"
-			centered>
+			centered
+			size='lg'>
 			<Modal.Header closeButton>
 				<Modal.Title>
 				<h4>История тренировок</h4>
-				<h6>Достоевский Федор Михайлович</h6>
+				<h6>{curr.name}</h6>
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body className='listgroup-scroll'>
@@ -109,46 +153,22 @@ function SportsmanWin() {
 			</thead>
 			<tbody>
 				<tr>
-				<td>26.10</td>
+				<td>26/10/2022</td>
 				<td>127</td>
 				<td>75</td>
 				<td>50</td>
 				</tr>
 				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
+				<td>{curr.train_1.date}</td>
+				<td>{curr.train_1.pulsemin}</td>
+				<td>{curr.train_1.pulsemax}</td>
+				<td>{curr.train_1.distance}</td>
 				</tr>
 				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
+				<td>{curr.train_2.date}</td>
+				<td>{curr.train_2.pulsemin}</td>
+				<td>{curr.train_2.pulsemax}</td>
+				<td>{curr.train_2.distance}</td>
 				</tr>
 			</tbody>
 			</Table>
@@ -166,7 +186,7 @@ function SportsmanWin() {
 			<Modal.Header closeButton>
 				<Modal.Title>
 				<h4>Достижения</h4>
-				<h6>Достоевский Федор Михайлович</h6>
+				<h6>{curr.name}</h6>
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
@@ -174,19 +194,19 @@ function SportsmanWin() {
 			<tbody>
 				<tr>
 				<td colSpan={2}>Дистанция, км</td>
-				<td>0,25</td>
+				<td>{curr.distance}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Тренировки</td>
-				<td>4</td>
+				<td>{curr.tquantity}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Врема, мин</td>
-				<td>327</td>
+				<td>{curr.time}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Средний пульс</td>
-				<td>97</td>
+				<td>{curr.avepulse}</td>
 				</tr>
 			</tbody>
 			</Table>
