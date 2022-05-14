@@ -7,9 +7,8 @@ import { sportsman } from '../emulation'
 
 type Sport = {
 	 id: number; name: string; age: number; size: number; weight: number; distance: number; 
-		tquantity: number; time: number; avepulse: number; train_1: { date: string; pulsemax: number; 
-		pulsemin: number; distance: number; }; train_2: { date: string; pulsemax: number; pulsemin: number; 
-		distance: number; }; 
+		tquantity: number; time: number; avepulse: number; trains: [{ date: string; pulsemax: number; 
+		pulsemin: number; distance: number; }]; 
 	}
 
 const blankSportsman : Sport = {
@@ -22,21 +21,15 @@ const blankSportsman : Sport = {
 		tquantity: 0,
 		time: 0,
 		avepulse: 0,
-		train_1: {
+		trains: [{
 			date: "",
 			pulsemax: 0,
 			pulsemin: 0,
 			distance: 0
-		},
-		train_2: {
-			date: "",
-			pulsemax: 0,
-			pulsemin: 0,
-			distance: 0
-    }
+		}]
 }
 
-let current : Sport;
+let currentSportsman : Sport;
 
 function SportsmanWin() {
 	const [showHistory, setShowHistory] = useState(false);
@@ -56,24 +49,18 @@ function SportsmanWin() {
 		tquantity: 0,
 		time: 0,
 		avepulse: 0,
-		train_1: {
+		trains: [{
 			date: "",
 			pulsemax: 0,
 			pulsemin: 0,
 			distance: 0
-		},
-		train_2: {
-			date: "",
-			pulsemax: 0,
-			pulsemin: 0,
-			distance: 0
-    }});
+		}]});
 
 	const handleListItem = (man: Sport) => {
 		setIsActive(false);
 		setCurr({id: man.id, name: man.name, age: man.age, size: man.size, weight: man.weight, distance: man.distance, 
-			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, train_1: man.train_1, train_2: man.train_2});
-		current = curr;
+			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, trains: man.trains});
+		currentSportsman = curr;
 	}
 
 	const handleChangeSearch = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -95,18 +82,12 @@ function SportsmanWin() {
 			tquantity: 0,
 			time: 0,
 			avepulse: 0,
-			train_1: {
+			trains: [{
 				date: "",
 				pulsemax: 0,
 				pulsemin: 0,
 				distance: 0
-			},
-			train_2: {
-				date: "",
-				pulsemax: 0,
-				pulsemin: 0,
-				distance: 0
-		}});
+			}]});
 		setShowCreate(false);
 	}
 
@@ -145,7 +126,7 @@ function SportsmanWin() {
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
-			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'} id="card-table">
+			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
 						Карточка спортсмена
@@ -181,13 +162,13 @@ function SportsmanWin() {
 						</tbody>
 						</Table>
 						</div>
-						<Col className='mt-4'><Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => current = curr}>
+						<Col className='mt-4'><Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => currentSportsman = curr}>
 							Выбрать
 						</Button></Link></Col>
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
-			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'} id="card-placeholder">
+			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
 						Выберите спортсмена
@@ -198,7 +179,8 @@ function SportsmanWin() {
 							<Placeholder.Button variant="outline-primary" xs={4} className='shadow-lg'></Placeholder.Button>
 						</Stack>
 						<Placeholder as={Card.Title} animation="glow">
-							<Placeholder xs={12} className='mb-4'/>{' '}<Placeholder xs={12}className='mb-4'/>{' '}
+							<Placeholder xs={12} className='mb-4'/>{' '}
+							<Placeholder xs={12}className='mb-4'/>{' '}
 							<Placeholder xs={12} className='mb-4'/>{' '}
 							<Placeholder xs={12} className='mb-4'/>{' '}
 						</Placeholder>
@@ -233,13 +215,13 @@ function SportsmanWin() {
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-				<td>26/10/2022</td>
-				<td>127</td>
-				<td>75</td>
-				<td>50</td>
-				</tr>
-				<tr>
+				{curr.trains.map(train => <tr>
+				<td>{train.date}</td>
+				<td>{train.pulsemin}</td>
+				<td>{train.pulsemax}</td>
+				<td>{train.distance}</td>
+				</tr>)}
+				{/* <tr>
 				<td>{curr.train_1.date}</td>
 				<td>{curr.train_1.pulsemin}</td>
 				<td>{curr.train_1.pulsemax}</td>
@@ -250,7 +232,7 @@ function SportsmanWin() {
 				<td>{curr.train_2.pulsemin}</td>
 				<td>{curr.train_2.pulsemax}</td>
 				<td>{curr.train_2.distance}</td>
-				</tr>
+				</tr> */}
 			</tbody>
 			</Table>
 			</Modal.Body>
@@ -336,4 +318,4 @@ class Sportsman extends React.Component {
 }
 
 export default Sportsman;
-export {current};
+export {currentSportsman};
