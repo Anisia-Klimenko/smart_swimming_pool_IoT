@@ -109,7 +109,7 @@ function SportsmanWin() {
 		}});
 		setShowCreate(false);
 	}
-
+	
 	useEffect(() => {
 		const result = sportsman.filter(man => man.name.toLowerCase().includes(searchInput.toLowerCase()));
 		setSearchResult(result);
@@ -181,9 +181,14 @@ function SportsmanWin() {
 						</tbody>
 						</Table>
 						</div>
-						<Col className='mt-4'><Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => current = curr}>
+						<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
+						<Button variant='danger' className='shadow-lg'>
+							Удалить
+						</Button>
+						<Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => current = curr}>
 							Выбрать
-						</Button></Link></Col>
+						</Button></Link>
+						</Stack>
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
@@ -202,9 +207,10 @@ function SportsmanWin() {
 							<Placeholder xs={12} className='mb-4'/>{' '}
 							<Placeholder xs={12} className='mb-4'/>{' '}
 						</Placeholder>
-						<Col className='mt-4'>
+						<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
+							<Placeholder.Button variant="danger" xs={3} className='shadow-lg'></Placeholder.Button>
 							<Placeholder.Button variant="primary" xs={3} className='shadow-lg'></Placeholder.Button>
-						</Col>
+						</Stack>
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
