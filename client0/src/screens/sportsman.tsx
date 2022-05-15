@@ -5,11 +5,13 @@ import '../App.css'
 import { Button, Container, Row, Col, Card, InputGroup, FormControl, Stack, Table, ListGroup, Modal, Placeholder } from "react-bootstrap";
 import { sportsman } from '../emulation'
 
+type Train = {
+	date: string; pulsemax: number; pulsemin: number; distance: number;
+}
+
 type Sport = {
 	 id: number; name: string; age: number; size: number; weight: number; distance: number; 
-		tquantity: number; time: number; avepulse: number; train_1: { date: string; pulsemax: number; 
-		pulsemin: number; distance: number; }; train_2: { date: string; pulsemax: number; pulsemin: number; 
-		distance: number; }; 
+		tquantity: number; time: number; avepulse: number; trains: Array<Train>; 
 	}
 
 const blankSportsman : Sport = {
@@ -22,26 +24,21 @@ const blankSportsman : Sport = {
 		tquantity: 0,
 		time: 0,
 		avepulse: 0,
-		train_1: {
+		trains: [{
 			date: "",
 			pulsemax: 0,
 			pulsemin: 0,
 			distance: 0
-		},
-		train_2: {
-			date: "",
-			pulsemax: 0,
-			pulsemin: 0,
-			distance: 0
-    }
+		}]
 }
 
-let current : Sport;
+let currentSportsman : Sport;
 
 function SportsmanWin() {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
 	const [showCreate, setShowCreate] = useState(false);
+	const [showDelete, setShowDelete] = useState(false);
 	const [searchInput, setSearchInput] = useState('');
 	const [searchResult, setSearchResult] = useState(sportsman);
 	const [isActive, setIsActive] = useState(true);
@@ -56,24 +53,19 @@ function SportsmanWin() {
 		tquantity: 0,
 		time: 0,
 		avepulse: 0,
-		train_1: {
+		trains: [{
 			date: "",
 			pulsemax: 0,
 			pulsemin: 0,
 			distance: 0
-		},
-		train_2: {
-			date: "",
-			pulsemax: 0,
-			pulsemin: 0,
-			distance: 0
-    }});
+		}]
+	});
 
 	const handleListItem = (man: Sport) => {
 		setIsActive(false);
 		setCurr({id: man.id, name: man.name, age: man.age, size: man.size, weight: man.weight, distance: man.distance, 
-			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, train_1: man.train_1, train_2: man.train_2});
-		current = curr;
+			tquantity: man.tquantity, time: man.time, avepulse: man.avepulse, trains: man.trains.map(x => x)});
+		currentSportsman = curr;
 	}
 
 	const handleChangeSearch = (event: { target: { value: React.SetStateAction<string>; }; }) => {
@@ -95,19 +87,21 @@ function SportsmanWin() {
 			tquantity: 0,
 			time: 0,
 			avepulse: 0,
-			train_1: {
+			trains: [{
 				date: "",
 				pulsemax: 0,
 				pulsemin: 0,
 				distance: 0
-			},
-			train_2: {
-				date: "",
-				pulsemax: 0,
-				pulsemin: 0,
-				distance: 0
-		}});
+			}]});
 		setShowCreate(false);
+	}
+
+	const handleDeleteSportsman = () => {
+		let ids = sportsman.map(man => man.id).indexOf(curr.id);
+		alert(ids);
+		if (ids > -1) {
+			sportsman.splice(ids, 1);
+		}
 	}
 	
 	useEffect(() => {
@@ -145,7 +139,7 @@ function SportsmanWin() {
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
-			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'} id="card-table">
+			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
 						Карточка спортсмена
@@ -182,17 +176,17 @@ function SportsmanWin() {
 						</Table>
 						</div>
 						<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
-						<Button variant='danger' className='shadow-lg'>
+						<Button variant='danger' className='shadow-lg' onClick={() => setShowDelete(true)}>
 							Удалить
 						</Button>
-						<Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => current = curr}>
+						<Link to='/training'><Button variant="primary" className='shadow-lg' onClick={() => currentSportsman = curr}>
 							Выбрать
 						</Button></Link>
 						</Stack>
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
-			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'} id="card-placeholder">
+			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
 						Выберите спортсмена
@@ -203,7 +197,8 @@ function SportsmanWin() {
 							<Placeholder.Button variant="outline-primary" xs={4} className='shadow-lg'></Placeholder.Button>
 						</Stack>
 						<Placeholder as={Card.Title} animation="glow">
-							<Placeholder xs={12} className='mb-4'/>{' '}<Placeholder xs={12}className='mb-4'/>{' '}
+							<Placeholder xs={12} className='mb-4'/>{' '}
+							<Placeholder xs={12}className='mb-4'/>{' '}
 							<Placeholder xs={12} className='mb-4'/>{' '}
 							<Placeholder xs={12} className='mb-4'/>{' '}
 						</Placeholder>
@@ -215,6 +210,24 @@ function SportsmanWin() {
 				</Card.Body></Card>
 			</Col>
 		</Row>
+		{/* Модальное окно - удалить спортсмена */}
+		<Modal
+			show={showDelete}
+			onHide={() => setShowDelete(false)}
+			centered>
+			<Modal.Header closeButton>
+				<Modal.Title>
+					Удалить спортсмена
+				</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				Вы уверены, что хотите удалить спортсмена {curr.name}?
+			</Modal.Body>
+			<Modal.Footer className='justify-content-between'>
+				<Button variant='outline-primary' className='shadow-lg' onClick={() => setShowDelete(false)}>Отмена</Button>
+				<Button variant="danger" className='shadow-lg' onClick={() => {handleDeleteSportsman(); setShowDelete(false)}}>Удалить</Button>
+			</Modal.Footer>
+		</Modal>
 		{/* Модальное окно - история тренировок */}
 		<Modal 
 			show={showHistory} 
@@ -239,24 +252,12 @@ function SportsmanWin() {
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-				<td>26/10/2022</td>
-				<td>127</td>
-				<td>75</td>
-				<td>50</td>
-				</tr>
-				<tr>
-				<td>{curr.train_1.date}</td>
-				<td>{curr.train_1.pulsemin}</td>
-				<td>{curr.train_1.pulsemax}</td>
-				<td>{curr.train_1.distance}</td>
-				</tr>
-				<tr>
-				<td>{curr.train_2.date}</td>
-				<td>{curr.train_2.pulsemin}</td>
-				<td>{curr.train_2.pulsemax}</td>
-				<td>{curr.train_2.distance}</td>
-				</tr>
+				{curr.trains.map(train => <tr>
+				<td>{train.date}</td>
+				<td>{train.pulsemin}</td>
+				<td>{train.pulsemax}</td>
+				<td>{train.distance}</td>
+				</tr>)}
 			</tbody>
 			</Table>
 			</Modal.Body>
@@ -342,4 +343,4 @@ class Sportsman extends React.Component {
 }
 
 export default Sportsman;
-export {current};
+export {currentSportsman};
