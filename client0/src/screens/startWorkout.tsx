@@ -13,7 +13,11 @@ function Timer(props: { time: number; }) {
 		  {("0" + Math.floor((props.time / 1000) % 60)).slice(-2)}
 		</h1>
 	);
-  }
+}
+
+let flag = 0;
+let totalTime;
+let totalDist = 0;
 
 function StartWorkoutWin() {
 	const [showSportsman, setShowSportsman] = useState(false);
@@ -26,12 +30,30 @@ function StartWorkoutWin() {
 	const [isStopped, setIsStopped] = useState(true);
 	const [time, setTime] = useState(0);
 
+	const [pulse, setPulse] = useState(0);
+	const [minPulse, setMinPulse] = useState(300);
+	const [maxPulse, setMaxPulse] = useState(0);
+	const [speed, setSpeed] = useState(0);
+
+	let max = 0;
+	let min = 300;
 	useEffect(() => {
 		let interval: number | NodeJS.Timer | null | undefined = null;
 		if(!isStopped) {
 			interval = setInterval(() => {
-				setTime((time) => time + 10);
-			}, 10);
+				setTime((time) => time + 1000);
+				setPulse(Math.round(65 + Math.random() * 5 + speed));
+				pulse > maxPulse ? setMaxPulse(pulse) : setMaxPulse(maxPulse);
+				pulse < minPulse ? setMinPulse(pulse) : setMinPulse(minPulse);
+				// getPulse(time);
+				let t = Math.floor((time / 1000) % 60);
+				currentTrain.rows.forEach(r => 
+				t - r.time > 0 ? (max = r.pulsemax, min = r.pulsemin) : t = t - r.time);
+				if (pulse < min && time % 3 === 0)
+					setSpeed(speed + 2);
+				if (pulse > max && speed > 1)
+					setSpeed(speed - 1);
+			}, 1000);
 		}
 		else {
 			clearInterval(interval as unknown as NodeJS.Timer);
@@ -39,7 +61,8 @@ function StartWorkoutWin() {
 		return () => {
 			clearInterval(interval as unknown as NodeJS.Timer);
 		}
-	}, [isStopped]);
+	}, [isStopped, max, maxPulse, min, minPulse, pulse, speed, time]);
+
 
 	const handleStartClick = () => {
 		setIsActive(true);
@@ -49,8 +72,61 @@ function StartWorkoutWin() {
 	const handleStopClick = () => {
 		setIsActive(false);
 		setIsStopped(true);
+		setSpeed(0);
+		setPulse(0);
 		setTime(0);
 	}
+
+	// useEffect(() => {
+	// 	let numberElements = 15;
+	// 	let updateInterval = 1000; //in ms
+
+	// 	let updateCount = 0;
+
+	// 	let chartPulse = document.getElementById("chartPulse");
+	// 	let chartSpeed = document.getElementById("chartSpeed");
+
+	// 	let commonOptions = {
+	// 		scales: {
+	// 			xAxes: [{
+	// 				type: 'time',
+	// 				time: {
+	// 					displayFormats: {
+	// 						second: 'mm:ss'
+	// 					}
+	// 				}
+	// 			}],
+	// 			yAxes: [{
+	// 				ticks: {
+	// 					beginAtZero:true
+	// 				}
+	// 			}]
+	// 		},
+	// 		legend: {display: false},
+	// 		tooltips:{
+	// 		enabled: false
+	// 		}
+	// 	};
+	// 	var chartPInstance = new Chart(chartPulse, {
+	// 		type: 'line',
+	// 		data: {
+	// 		  datasets: [{
+	// 			  label: "X Acceleration",
+	// 			  data: 0,
+	// 			  fill: false,
+	// 			  borderColor: '#343e9a',
+	// 			  borderWidth: 1
+	// 		  }]
+	// 		},
+	// 		options: Object.assign({}, commonOptions, {
+	// 		  title:{
+	// 			display: true,
+	// 			fontSize: 18
+	// 		  }
+	// 		})
+	// 	});
+
+	// }, [isActive]);
 
 	return (
 		<Container>
@@ -71,7 +147,9 @@ function StartWorkoutWin() {
 							Пульс от времени
 						</Card.Title>
 						<Card.Text>
-						
+						<div id="xAccel" className="x">
+                            <canvas id="chartPulse"></canvas>
+                        </div>
 						</Card.Text>
 					</Card.Body></Card>
 				</Col>
@@ -81,10 +159,44 @@ function StartWorkoutWin() {
 							Скорость
 						</Card.Title>
 						<Card.Text>
-						
+						<div id="xAccel" className="x">
+                            <canvas id="chartSpeed"></canvas>
+                        </div>
 						</Card.Text>
 					</Card.Body></Card>
 				</Col>
+			</Row>
+			<Row>
+				<Col md='3'>
+				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+					<h4>Пульс</h4>
+				</Stack>
+				</Col> 
+				<Col md='3'>
+				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+					<h1>{pulse}</h1>
+				</Stack>
+				</Col> 
+				<Col md='3'>
+				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+					<h4>Скорость</h4>
+				</Stack>
+				</Col> 
+				<Col md='3'>
+				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+					<Button 
+						className='shadow-lg' 
+						variant={isActive ? 'primary' : 'secondary'} 
+						disabled={!isActive}
+						onClick={() => setSpeed(speed - 0.5)}>-</Button>
+					<h1>{speed}</h1>
+					<Button 
+						className='shadow-lg' 
+						variant={isActive ? 'primary' : 'secondary'} 
+						disabled={!isActive}
+						onClick={() => setSpeed(speed + 0.5)}>+</Button>
+				</Stack>
+				</Col> 
 			</Row>
 			<Row>
 				<Col md='3'>
@@ -97,36 +209,6 @@ function StartWorkoutWin() {
 					<Timer time={time}></Timer>
 				</Stack>
 				</Col>
-				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h4>Пульс</h4>
-				</Stack>
-				</Col> 
-				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h1>0</h1>
-				</Stack>
-				</Col> 
-			</Row>
-			<Row>
-				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h4>Скорость</h4>
-				</Stack>
-				</Col> 
-				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Button 
-						className='shadow-lg' 
-						variant={isActive ? 'primary' : 'secondary'} 
-						disabled={!isActive}>-</Button>
-					<h1>0</h1>
-					<Button 
-						className='shadow-lg' 
-						variant={isActive ? 'primary' : 'secondary'} 
-						disabled={!isActive}>+</Button>
-				</Stack>
-				</Col> 
 				<Col  md='6'>
 				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
 					<Button size='lg' variant="success" className={isActive ? 'd-none' : 'shadow-lg'} onClick={handleStartClick}>Старт</Button>
@@ -217,8 +299,8 @@ function StartWorkoutWin() {
 			<thead>
 				<tr>
 				<th>Дата</th>
-				<th>Пульс (макс)</th>
 				<th>Пульс (мин)</th>
+				<th>Пульс (макс)</th>
 				<th>Дистанция, м</th>
 				</tr>
 			</thead>
@@ -290,8 +372,8 @@ function StartWorkoutWin() {
 				<thead>
 					<tr>
 					<th>Время, сек</th>
-					<th>Пульс (макс)</th>
 					<th>Пульс (мин)</th>
+					<th>Пульс (макс)</th>
 					</tr>
 				</thead>
 				<tbody>

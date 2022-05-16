@@ -37,7 +37,7 @@ let trainings = [{
     {
         time: 10,
         pulsemax: 80,
-        pulsemin: 70
+        pulsemin: 75
     }]
 },{
     id: 3,
