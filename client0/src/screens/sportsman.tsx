@@ -77,7 +77,7 @@ function SportsmanWin() {
 	}
 
 	const handleCreateSportsman = () => {
-		let ids = Math.max.apply(sportsman.map(man => man.id)) + 1;
+		let ids = Math.max(...sportsman.map(man => man.id)) + 1;
 		sportsman.push({id: ids,
 			name: newSportsman.name, 
 			age: newSportsman.age, 
@@ -98,10 +98,10 @@ function SportsmanWin() {
 
 	const handleDeleteSportsman = () => {
 		let ids = sportsman.map(man => man.id).indexOf(curr.id);
-		alert(ids);
 		if (ids > -1) {
 			sportsman.splice(ids, 1);
 		}
+		setIsActive(false);
 	}
 	
 	useEffect(() => {
@@ -109,9 +109,14 @@ function SportsmanWin() {
 		setSearchResult(result);
 	}, [searchInput])
 
+	useEffect(() => {
+
+	}, [isActive])
+
 	return(
 	<Container className='pt-5 container-fluid text-center d-flex flex-column'>
 		<Row className="mt-5 justify-content-md-center align-items-center flex-fill">
+			{/* Карточка со списком спортсменов */}
 			<Col md='6' className='pt-5'>
 				<Card className='shadow' style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
@@ -139,6 +144,7 @@ function SportsmanWin() {
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
+			{/* Карточка с информацией о спортсмене */}
 			<Col md='6' className={isActive ? 'pt-5 d-none' : 'pt-5'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
@@ -186,6 +192,7 @@ function SportsmanWin() {
 					</Card.Text>
 				</Card.Body></Card>
 			</Col>
+			{/* Пустая карточка загрузки */}
 			<Col md='6' className={isActive ? 'pt-5' : 'pt-5 d-none'}>
 				<Card className='shadow'  style={{ height: '26.8rem' }}><Card.Body className='m-3'>
 					<Card.Title className='pt-2 pb-2'>
