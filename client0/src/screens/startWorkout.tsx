@@ -1,8 +1,19 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'
 import {Button, Container, Row, Col, Card, Stack, Table, Modal, Offcanvas} from "react-bootstrap";
+import { currentSportsman } from './sportsman'
+import { currentTrain } from './training'
+
+function Timer(props: { time: number; }) {
+	return (
+		<h1>
+		  {("0" + Math.floor((props.time / 60000) % 60)).slice(-2)}:
+		  {("0" + Math.floor((props.time / 1000) % 60)).slice(-2)}
+		</h1>
+	);
+  }
 
 function StartWorkoutWin() {
 	const [showSportsman, setShowSportsman] = useState(false);
@@ -10,16 +21,46 @@ function StartWorkoutWin() {
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
 	const [showPoolInfo, setShowPoolInfo] = useState(false);
+	const [isActive, setIsActive] = useState(false);
+
+	const [isStopped, setIsStopped] = useState(true);
+	const [time, setTime] = useState(0);
+
+	useEffect(() => {
+		let interval: number | NodeJS.Timer | null | undefined = null;
+		if(!isStopped) {
+			interval = setInterval(() => {
+				setTime((time) => time + 10);
+			}, 10);
+		}
+		else {
+			clearInterval(interval as unknown as NodeJS.Timer);
+		}
+		return () => {
+			clearInterval(interval as unknown as NodeJS.Timer);
+		}
+	}, [isStopped]);
+
+	const handleStartClick = () => {
+		setIsActive(true);
+		setIsStopped(false);
+	}
+
+	const handleStopClick = () => {
+		setIsActive(false);
+		setIsStopped(true);
+		setTime(0);
+	}
 
 	return (
 		<Container>
 			<Row>
 				<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowSportsman(true)}>
-						Достоевский Федор Михайлович
+						{currentSportsman.name}
 					</Button>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(true)}>
-						Кардио рывок
+						{currentTrain.name}
 					</Button>
 				</Stack>
 			</Row>
@@ -53,7 +94,7 @@ function StartWorkoutWin() {
 				</Col> 
 				<Col md='3'>
 				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h1>0</h1>
+					<Timer time={time}></Timer>
 				</Stack>
 				</Col>
 				<Col md='3'>
@@ -75,15 +116,21 @@ function StartWorkoutWin() {
 				</Col> 
 				<Col md='3'>
 				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Button className='shadow-lg' variant='secondary' disabled>-</Button>
+					<Button 
+						className='shadow-lg' 
+						variant={isActive ? 'primary' : 'secondary'} 
+						disabled={!isActive}>-</Button>
 					<h1>0</h1>
-					<Button className='shadow-lg' variant='secondary' disabled>+</Button>
+					<Button 
+						className='shadow-lg' 
+						variant={isActive ? 'primary' : 'secondary'} 
+						disabled={!isActive}>+</Button>
 				</Stack>
 				</Col> 
 				<Col  md='6'>
 				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Button size='lg' variant="success" className='shadow-lg'>Старт</Button>
-					<Button size='lg' variant="danger" className='d-none shadow-lg'>Стоп</Button>
+					<Button size='lg' variant="success" className={isActive ? 'd-none' : 'shadow-lg'} onClick={handleStartClick}>Старт</Button>
+					<Button size='lg' variant="danger" className={isActive ? 'shadow-lg' : 'd-none'} onClick={handleStopClick}>Стоп</Button>
 				</Stack>
 				</Col>
 				<Button variant="outline-primary" className='shadow-lg mt-4' onClick={() => setShowPoolInfo(true)}>
@@ -118,7 +165,6 @@ function StartWorkoutWin() {
 			show={showSportsman} 
 			onHide={() => setShowSportsman(false)} 
 			aria-labelledby="contained-modal-title-vcenter"
-			// size='lg'
 			centered>
 			<Modal.Header closeButton>
 				<Modal.Title>
@@ -131,19 +177,19 @@ function StartWorkoutWin() {
 				<tbody>
 					<tr>
 					<td>ФИО</td>
-					<td colSpan={2}>Достоевский Федор Михайлович</td>
+					<td colSpan={2}>{currentSportsman.name}</td>
 					</tr>
 					<tr>
 					<td>Возраст</td>
-					<td colSpan={2}>27 лет</td>
+					<td colSpan={2}>{currentSportsman.age} лет</td>
 					</tr>
 					<tr>
 					<td>Рост</td>
-					<td colSpan={2}>178 см</td>
+					<td colSpan={2}>{currentSportsman.size} см</td>
 					</tr>
 					<tr>
 					<td>Вес</td>
-					<td colSpan={2}>72 кг</td>
+					<td colSpan={2}>{currentSportsman.weight} кг</td>
 					</tr>
 				</tbody>
 				</Table>
@@ -163,7 +209,7 @@ function StartWorkoutWin() {
 			<Modal.Header closeButton>
 				<Modal.Title>
 				<h4>История тренировок</h4>
-				<h6>Достоевский Федор Михайлович</h6>
+				<h6>{currentSportsman.name}</h6>
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body className='table-scroll-sm'>
@@ -177,48 +223,12 @@ function StartWorkoutWin() {
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-				<td>26.10</td>
-				<td>127</td>
-				<td>75</td>
-				<td>50</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
-				<tr>
-				<td>22.10</td>
-				<td>120</td>
-				<td>74</td>
-				<td>28</td>
-				</tr>
+				{currentSportsman.trains.map(train => <tr>
+				<td>{train.date}</td>
+				<td>{train.pulsemin}</td>
+				<td>{train.pulsemax}</td>
+				<td>{train.distance}</td>
+				</tr>)}
 			</tbody>
 			</Table>
 			</Modal.Body>
@@ -234,7 +244,7 @@ function StartWorkoutWin() {
 			<Modal.Header closeButton>
 				<Modal.Title>
 				<h4>Достижения</h4>
-				<h6>Достоевский Федор Михайлович</h6>
+				<h6>{currentSportsman.name}</h6>
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
@@ -242,19 +252,19 @@ function StartWorkoutWin() {
 			<tbody>
 				<tr>
 				<td colSpan={2}>Дистанция, км</td>
-				<td>0,25</td>
+				<td>{currentSportsman.distance}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Тренировки</td>
-				<td>4</td>
+				<td>{currentSportsman.tquantity}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Врема, мин</td>
-				<td>327</td>
+				<td>{currentSportsman.time}</td>
 				</tr>
 				<tr>
 				<td colSpan={2}>Средний пульс</td>
-				<td>97</td>
+				<td>{currentSportsman.avepulse}</td>
 				</tr>
 			</tbody>
 			</Table>
@@ -271,7 +281,7 @@ function StartWorkoutWin() {
 			<Modal.Header closeButton>
 				<Modal.Title>
 				<h4>Информация о тренировке</h4>
-				<h6>Кардио рывок</h6>
+				<h6>{currentTrain.name}</h6>
 				</Modal.Title>
 			</Modal.Header>
 			<Modal.Body>
@@ -285,36 +295,11 @@ function StartWorkoutWin() {
 					</tr>
 				</thead>
 				<tbody>
-					<tr>
-					<td>20</td>
-					<td>60</td>
-					<td>80</td>
-					</tr>
-					<tr>
-					<td>30</td>
-					<td>65</td>
-					<td>85</td>
-					</tr>
-					<tr>
-					<td>20</td>
-					<td>60</td>
-					<td>80</td>
-					</tr>
-					<tr>
-					<td>20</td>
-					<td>60</td>
-					<td>80</td>
-					</tr>
-					<tr>
-					<td>30</td>
-					<td>65</td>
-					<td>85</td>
-					</tr>
-					<tr>
-					<td>20</td>
-					<td>60</td>
-					<td>80</td>
-					</tr>
+					{currentTrain.rows.map(row => <tr>
+					<td>{row.time}</td>
+					<td>{row.pulsemin}</td>
+					<td>{row.pulsemax}</td>
+					</tr>)}
 				</tbody>
 				</Table>
 			</div>
@@ -334,3 +319,7 @@ class StartWorkout extends React.Component {
 }
 
 export default StartWorkout;
+
+function start(start: any): React.SetStateAction<Date> {
+	throw new Error('Function not implemented.');
+}

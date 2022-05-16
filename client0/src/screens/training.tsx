@@ -154,7 +154,7 @@ function TrainingWin() {
 						</div>
 						<Stack direction="horizontal" className='justify-content-between mt-3'>
 							<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowChange(true)}>Редактировать</Button>
-							<Link to='/startWorkout'><Button variant="primary" className='shadow-lg'>Выбрать</Button></Link>
+							<Link to='/startWorkout'><Button variant="primary" className='shadow-lg' onClick={() => currentTrain = curr}>Выбрать</Button></Link>
 						</Stack>
 					</Card.Text>
 				</Card.Body></Card>
@@ -298,3 +298,4 @@ class Training extends React.Component {
 }
 
 export default Training;
+export { currentTrain };
