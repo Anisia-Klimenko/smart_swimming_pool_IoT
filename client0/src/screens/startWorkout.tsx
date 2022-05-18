@@ -15,16 +15,15 @@ function Timer(props: { time: number; }) {
 	);
 }
 
-let flag = 0;
-let totalTime;
-let totalDist = 0;
-
 function StartWorkoutWin() {
 	const [showSportsman, setShowSportsman] = useState(false);
 	const [showTraining, setShowTraining] = useState(false);
 	const [showHistory, setShowHistory] = useState(false);
 	const [showAchiv, setShowAchiv] = useState(false);
 	const [showPoolInfo, setShowPoolInfo] = useState(false);
+	const [showSave, setShowSave] = useState(false);
+	const [showStat, setShowStat] = useState(false);
+
 	const [isActive, setIsActive] = useState(false);
 
 	const [isStopped, setIsStopped] = useState(true);
@@ -34,6 +33,7 @@ function StartWorkoutWin() {
 	const [minPulse, setMinPulse] = useState(300);
 	const [maxPulse, setMaxPulse] = useState(0);
 	const [speed, setSpeed] = useState(0);
+	const [totalDist, setTotalDIst] = useState(0);
 
 	let max = 0;
 	let min = 300;
@@ -44,8 +44,7 @@ function StartWorkoutWin() {
 				setTime((time) => time + 1000);
 				setPulse(Math.round(65 + Math.random() * 5 + speed));
 				pulse > maxPulse ? setMaxPulse(pulse) : setMaxPulse(maxPulse);
-				pulse < minPulse ? setMinPulse(pulse) : setMinPulse(minPulse);
-				// getPulse(time);
+				(pulse < minPulse && pulse !== 0) ? setMinPulse(pulse) : setMinPulse(minPulse);
 				let t = Math.floor((time / 1000) % 60);
 				currentTrain.rows.forEach(r => 
 				t - r.time > 0 ? (max = r.pulsemax, min = r.pulsemin) : t = t - r.time);
@@ -53,6 +52,7 @@ function StartWorkoutWin() {
 					setSpeed(speed + 2);
 				if (pulse > max && speed > 1)
 					setSpeed(speed - 1);
+				setTotalDIst(totalDist + speed / 3600 * 1000);
 			}, 1000);
 		}
 		else {
@@ -67,14 +67,14 @@ function StartWorkoutWin() {
 	const handleStartClick = () => {
 		setIsActive(true);
 		setIsStopped(false);
+		setSpeed(0);
+		setPulse(0);
+		setTime(0);
 	}
 
 	const handleStopClick = () => {
 		setIsActive(false);
 		setIsStopped(true);
-		setSpeed(0);
-		setPulse(0);
-		setTime(0);
 	}
 
 	// useEffect(() => {
@@ -130,6 +130,7 @@ function StartWorkoutWin() {
 
 	return (
 		<Container>
+			{/* Основная информация на гравной странице */}
 			<Row>
 				<Stack direction="horizontal" className='justify-content-between mt-4 mb-3'>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowSportsman(true)}>
@@ -147,9 +148,9 @@ function StartWorkoutWin() {
 							Пульс от времени
 						</Card.Title>
 						<Card.Text>
-						<div id="xAccel" className="x">
+						{/* <div id="xAccel" className="x">
                             <canvas id="chartPulse"></canvas>
-                        </div>
+                        </div> */}
 						</Card.Text>
 					</Card.Body></Card>
 				</Col>
@@ -212,13 +213,14 @@ function StartWorkoutWin() {
 				<Col  md='6'>
 				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
 					<Button size='lg' variant="success" className={isActive ? 'd-none' : 'shadow-lg'} onClick={handleStartClick}>Старт</Button>
-					<Button size='lg' variant="danger" className={isActive ? 'shadow-lg' : 'd-none'} onClick={handleStopClick}>Стоп</Button>
+					<Button size='lg' variant="danger" className={isActive ? 'shadow-lg' : 'd-none'} onClick={() => setShowSave(true)}>Стоп</Button>
 				</Stack>
 				</Col>
 				<Button variant="outline-primary" className='shadow-lg mt-4' onClick={() => setShowPoolInfo(true)}>
 					Бассейн
 				</Button>
 			</Row>
+			{/* Информация о бассейне (температура) - всплывающая карточка при нажатии кнопки Бассейн */}
 			<Offcanvas 
 				show={showPoolInfo} 
 				onHide={() => setShowPoolInfo(false)}
@@ -243,6 +245,7 @@ function StartWorkoutWin() {
 				</Row> 
 				</Offcanvas.Body>
 			</Offcanvas>
+			{/* Модальное окно - Карточка спортсмена */}
 			<Modal 
 			show={showSportsman} 
 			onHide={() => setShowSportsman(false)} 
@@ -283,6 +286,7 @@ function StartWorkoutWin() {
 					<Button variant="primary" className='shadow-lg' onClick={() => setShowSportsman(false)}>Назад</Button>
 			</Modal.Footer>
 		</Modal>
+		{/* Модальное окно - История тренировок */}
 		<Modal 
 			show={showHistory} 
 			onHide={() => setShowHistory(false)} 
@@ -318,6 +322,7 @@ function StartWorkoutWin() {
 				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(false)}>Закрыть</Button>
 			</Modal.Footer>
 		</Modal>
+		{/* Модальное окно - Достижения */}
 		<Modal 
 			show={showAchiv} 
 			onHide={() => setShowAchiv(false)} 
@@ -355,6 +360,7 @@ function StartWorkoutWin() {
 				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(false)}>Закрыть</Button>
 			</Modal.Footer>
 		</Modal>
+		{/* Модальное окно - Информация о тренировке */}
 		<Modal 
 			show={showTraining} 
 			onHide={() => setShowTraining(false)} 
@@ -390,6 +396,62 @@ function StartWorkoutWin() {
 				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(false)}>Закрыть</Button>
 			</Modal.Footer>
 		</Modal>
+		{/* Модальное окно - Сохранение тренировки */}
+		<Modal
+			show={showSave}
+			onHide={() => setShowSave(false)}
+			centered>
+			<Modal.Header closeButton>
+				<Modal.Title>
+					Сохранение
+				</Modal.Title>
+			</Modal.Header>
+			<Modal.Body>
+				Вы уверены, что хотите завершить тренировку?
+			</Modal.Body>
+			<Modal.Footer className='justify-content-between'>
+				<Button variant='outline-primary' className='shadow-lg' onClick={() => setShowSave(false)}>Отмена</Button>
+				<Button variant='danger' className='shadow-lg' onClick={() => {setShowSave(false); handleStopClick();}}>Начать заново</Button>
+				<Button variant="success" className='shadow-lg' onClick={() => {handleStopClick(); setShowSave(false); setShowStat(true);}}>Сохранить</Button>
+			</Modal.Footer>
+		</Modal>
+		{/* Модальное окно - Статистика после тренировки */}
+		<Modal
+			show={showStat}
+			onHide={() => setShowStat(false)}
+			centered>
+		<Modal.Header closeButton>
+			<Modal.Title>
+				Результаты тренировки
+			</Modal.Title>
+		</Modal.Header>
+		<Modal.Body>
+			<Table striped bordered hover className="justify-content-start">
+			<tbody>
+				<tr>
+				<td className='col-md-3'>Дистанция (м)</td>
+				<td colSpan={2} id='name'>{totalDist}</td>
+				</tr>
+				<tr>
+				<td>Время (мин)</td>
+				<td colSpan={2} id='age'>{(time / 1000 / 60).toFixed(2)}</td>
+				</tr>
+				<tr>
+				<td>Пульс (мин)</td>
+				<td colSpan={2} id='size'>{minPulse}</td>
+				</tr>
+				<tr>
+				<td>Пульс (макс)</td>
+				<td colSpan={2} id='weight'>{maxPulse}</td>
+				</tr>
+			</tbody>
+			</Table>
+		</Modal.Body>
+		<Modal.Footer>
+			<Button variant='danger' className='shadow-lg' onClick={() => setShowStat(false)}>Удалить</Button>
+			<Button variant='success' className='shadow-lg'>Сохранить</Button>
+		</Modal.Footer>
+		</Modal>
 		</Container>
 	)
 }
@@ -401,7 +463,3 @@ class StartWorkout extends React.Component {
 }
 
 export default StartWorkout;
-
-function start(start: any): React.SetStateAction<Date> {
-	throw new Error('Function not implemented.');
-}

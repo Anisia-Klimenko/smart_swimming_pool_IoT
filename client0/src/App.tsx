@@ -21,6 +21,7 @@ function App() {
       <Route path='/sportsman' element={<Sportsman/>}/>
       <Route path='/training' element={<Training/>}/>
       <Route path='/startWorkout' element={<StartWorkout/>}/>
+      {/* <Route path='/test' element={<Test/>}/> */}
     </Routes>
   );
 }
