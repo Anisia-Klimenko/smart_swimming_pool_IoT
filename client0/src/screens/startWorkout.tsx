@@ -1,19 +1,19 @@
-import React, {useState, useEffect} from 'react';
-import {Link} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../App.css'
-import {Button, Container, Row, Col, Card, Stack, Table, Modal, Offcanvas} from "react-bootstrap";
+import { Button, Container, Row, Col, Card, Stack, Table, Modal, Offcanvas } from "react-bootstrap";
 import { currentSportsman } from './sportsman'
 import { currentTrain } from './training'
 
 function Timer(props: { time: number; }) {
 	return (
 		<h1>
-		  {("0" + Math.floor((props.time / 60000) % 60)).slice(-2)}:
-		  {("0" + Math.floor((props.time / 1000) % 60)).slice(-2)}
+			{("0" + Math.floor((props.time / 60000) % 60)).slice(-2)}:
+			{("0" + Math.floor((props.time / 1000) % 60)).slice(-2)}
 		</h1>
 	);
 }
+
 
 function StartWorkoutWin() {
 	const [showSportsman, setShowSportsman] = useState(false);
@@ -33,26 +33,39 @@ function StartWorkoutWin() {
 	const [minPulse, setMinPulse] = useState(300);
 	const [maxPulse, setMaxPulse] = useState(0);
 	const [speed, setSpeed] = useState(0);
-	const [totalDist, setTotalDIst] = useState(0);
+	const [totalDist, setTotalDist] = useState(0);
+
+	const [tempWater, setTempWater] = useState(25);
+	const [tempAir, setTempAir] = useState(25);
 
 	let max = 0;
 	let min = 300;
+
+	let tmp: number;
+
+	function readTextFile() {	
+		fetch('./pulse.txt').then(resp => resp.text()).then(data => console.log(data));
+	}
+
 	useEffect(() => {
 		let interval: number | NodeJS.Timer | null | undefined = null;
-		if(!isStopped) {
+		if (!isStopped) {
 			interval = setInterval(() => {
 				setTime((time) => time + 1000);
-				setPulse(Math.round(65 + Math.random() * 5 + speed));
+				// eslint-disable-next-line react-hooks/exhaustive-deps
+				tmp = Math.round(65 + Math.random() * 5 + speed);
+				setPulse(tmp);
 				pulse > maxPulse ? setMaxPulse(pulse) : setMaxPulse(maxPulse);
 				(pulse < minPulse && pulse !== 0) ? setMinPulse(pulse) : setMinPulse(minPulse);
 				let t = Math.floor((time / 1000) % 60);
-				currentTrain.rows.forEach(r => 
-				t - r.time > 0 ? (max = r.pulsemax, min = r.pulsemin) : t = t - r.time);
+				currentTrain.rows.forEach(r =>
+					// eslint-disable-next-line react-hooks/exhaustive-deps
+					t - r.time > 0 ? (max = r.pulsemax, min = r.pulsemin) : t = t - r.time);
 				if (pulse < min && time % 3 === 0)
 					setSpeed(speed + 2);
 				if (pulse > max && speed > 1)
 					setSpeed(speed - 1);
-				setTotalDIst(totalDist + speed / 3600 * 1000);
+				setTotalDist(totalDist + speed / 3600 * 1000);
 			}, 1000);
 		}
 		else {
@@ -65,11 +78,13 @@ function StartWorkoutWin() {
 
 
 	const handleStartClick = () => {
+		readTextFile();
 		setIsActive(true);
 		setIsStopped(false);
 		setSpeed(0);
 		setPulse(0);
 		setTime(0);
+		setTotalDist(0);
 	}
 
 	const handleStopClick = () => {
@@ -148,7 +163,7 @@ function StartWorkoutWin() {
 							Пульс от времени
 						</Card.Title>
 						<Card.Text>
-						{/* <div id="xAccel" className="x">
+							{/* <div id="xAccel" className="x">
                             <canvas id="chartPulse"></canvas>
                         </div> */}
 						</Card.Text>
@@ -160,69 +175,69 @@ function StartWorkoutWin() {
 							Скорость
 						</Card.Title>
 						<Card.Text>
-						<div id="xAccel" className="x">
-                            <canvas id="chartSpeed"></canvas>
-                        </div>
+							<div id="xAccel" className="x">
+								<canvas id="chartSpeed"></canvas>
+							</div>
 						</Card.Text>
 					</Card.Body></Card>
 				</Col>
 			</Row>
 			<Row>
 				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h4>Пульс</h4>
-				</Stack>
-				</Col> 
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<h4>Пульс</h4>
+					</Stack>
+				</Col>
 				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h1>{pulse}</h1>
-				</Stack>
-				</Col> 
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<h1>{pulse}</h1>
+					</Stack>
+				</Col>
 				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h4>Скорость</h4>
-				</Stack>
-				</Col> 
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<h4>Скорость</h4>
+					</Stack>
+				</Col>
 				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Button 
-						className='shadow-lg' 
-						variant={isActive ? 'primary' : 'secondary'} 
-						disabled={!isActive}
-						onClick={() => setSpeed(speed - 0.5)}>-</Button>
-					<h1>{speed}</h1>
-					<Button 
-						className='shadow-lg' 
-						variant={isActive ? 'primary' : 'secondary'} 
-						disabled={!isActive}
-						onClick={() => setSpeed(speed + 0.5)}>+</Button>
-				</Stack>
-				</Col> 
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<Button
+							className='shadow-lg'
+							variant={isActive ? 'primary' : 'secondary'}
+							disabled={!isActive}
+							onClick={() => setSpeed(speed - 0.5)}>-</Button>
+						<h1>{speed}</h1>
+						<Button
+							className='shadow-lg'
+							variant={isActive ? 'primary' : 'secondary'}
+							disabled={!isActive}
+							onClick={() => setSpeed(speed + 0.5)}>+</Button>
+					</Stack>
+				</Col>
 			</Row>
 			<Row>
 				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h4>Время</h4>
-				</Stack>
-				</Col> 
-				<Col md='3'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Timer time={time}></Timer>
-				</Stack>
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<h4>Время</h4>
+					</Stack>
 				</Col>
-				<Col  md='6'>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<Button size='lg' variant="success" className={isActive ? 'd-none' : 'shadow-lg'} onClick={handleStartClick}>Старт</Button>
-					<Button size='lg' variant="danger" className={isActive ? 'shadow-lg' : 'd-none'} onClick={() => setShowSave(true)}>Стоп</Button>
-				</Stack>
+				<Col md='3'>
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<Timer time={time}></Timer>
+					</Stack>
+				</Col>
+				<Col md='6'>
+					<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+						<Button size='lg' variant="success" className={isActive ? 'd-none' : 'shadow-lg'} onClick={handleStartClick}>Старт</Button>
+						<Button size='lg' variant="danger" className={isActive ? 'shadow-lg' : 'd-none'} onClick={() => setShowSave(true)}>Стоп</Button>
+					</Stack>
 				</Col>
 				<Button variant="outline-primary" className='shadow-lg mt-4' onClick={() => setShowPoolInfo(true)}>
 					Бассейн
 				</Button>
 			</Row>
 			{/* Информация о бассейне (температура) - всплывающая карточка при нажатии кнопки Бассейн */}
-			<Offcanvas 
-				show={showPoolInfo} 
+			<Offcanvas
+				show={showPoolInfo}
 				onHide={() => setShowPoolInfo(false)}
 				key='top'
 				placement='top'
@@ -231,234 +246,234 @@ function StartWorkoutWin() {
 					<Offcanvas.Title>Информация о бассейне</Offcanvas.Title>
 				</Offcanvas.Header>
 				<Offcanvas.Body>
-				<Row>
-				<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
-					<h5>Температура воды</h5>
-					<Button className='shadow-lg' variant='primary'>-</Button>
-					<h1>25</h1>
-					<Button className='shadow-lg' variant='primary'>+</Button>
-					<h5>Температура воздуха</h5>
-					<Button className='shadow-lg' variant='primary'>-</Button>
-					<h1>24</h1>
-					<Button className='shadow-lg' variant='primary'>+</Button>
-				</Stack>
-				</Row> 
+					<Row>
+						<Stack direction="horizontal" className='justify-content-around mt-4 mb-3'>
+							<h5>Температура воды</h5>
+							<Button className='shadow-lg' variant='primary' onClick={() => setTempWater(tempWater - 0.5)}>-</Button>
+							<h1>{tempWater}</h1>
+							<Button className='shadow-lg' variant='primary' onClick={() => setTempWater(tempWater + 0.5)}>+</Button>
+							<h5>Температура воздуха</h5>
+							<Button className='shadow-lg' variant='primary' onClick={() => setTempAir(tempAir - 0.5)}>-</Button>
+							<h1>{tempAir}</h1>
+							<Button className='shadow-lg' variant='primary' onClick={() => setTempAir(tempAir + 0.5)}>+</Button>
+						</Stack>
+					</Row>
 				</Offcanvas.Body>
 			</Offcanvas>
 			{/* Модальное окно - Карточка спортсмена */}
-			<Modal 
-			show={showSportsman} 
-			onHide={() => setShowSportsman(false)} 
-			aria-labelledby="contained-modal-title-vcenter"
-			centered>
-			<Modal.Header closeButton>
-				<Modal.Title>
-				<h4>Карточка спортсмена</h4>
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body className='m-3'>
-			<div className='listgroup-scroll'>
-				<Table striped bordered hover className="justify-content-start">
-				<tbody>
-					<tr>
-					<td>ФИО</td>
-					<td colSpan={2}>{currentSportsman.name}</td>
-					</tr>
-					<tr>
-					<td>Возраст</td>
-					<td colSpan={2}>{currentSportsman.age} лет</td>
-					</tr>
-					<tr>
-					<td>Рост</td>
-					<td colSpan={2}>{currentSportsman.size} см</td>
-					</tr>
-					<tr>
-					<td>Вес</td>
-					<td colSpan={2}>{currentSportsman.weight} кг</td>
-					</tr>
-				</tbody>
-				</Table>
-			</div>
-			</Modal.Body>
-			<Modal.Footer className='justify-content-right'>
+			<Modal
+				show={showSportsman}
+				onHide={() => setShowSportsman(false)}
+				aria-labelledby="contained-modal-title-vcenter"
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						<h4>Карточка спортсмена</h4>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className='m-3'>
+					<div className='listgroup-scroll'>
+						<Table striped bordered hover className="justify-content-start">
+							<tbody>
+								<tr>
+									<td>ФИО</td>
+									<td colSpan={2}>{currentSportsman.name}</td>
+								</tr>
+								<tr>
+									<td>Возраст</td>
+									<td colSpan={2}>{currentSportsman.age} лет</td>
+								</tr>
+								<tr>
+									<td>Рост</td>
+									<td colSpan={2}>{currentSportsman.size} см</td>
+								</tr>
+								<tr>
+									<td>Вес</td>
+									<td colSpan={2}>{currentSportsman.weight} кг</td>
+								</tr>
+							</tbody>
+						</Table>
+					</div>
+				</Modal.Body>
+				<Modal.Footer className='justify-content-right'>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(true)}>История тренировок</Button>
 					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(true)}>Достижения</Button>
 					<Button variant="primary" className='shadow-lg' onClick={() => setShowSportsman(false)}>Назад</Button>
-			</Modal.Footer>
-		</Modal>
-		{/* Модальное окно - История тренировок */}
-		<Modal 
-			show={showHistory} 
-			onHide={() => setShowHistory(false)} 
-			aria-labelledby="contained-modal-title-vcenter"
-			centered>
-			<Modal.Header closeButton>
-				<Modal.Title>
-				<h4>История тренировок</h4>
-				<h6>{currentSportsman.name}</h6>
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body className='table-scroll-sm'>
-			<Table striped bordered hover>
-			<thead>
-				<tr>
-				<th>Дата</th>
-				<th>Пульс (мин)</th>
-				<th>Пульс (макс)</th>
-				<th>Дистанция, м</th>
-				</tr>
-			</thead>
-			<tbody>
-				{currentSportsman.trains.map(train => <tr>
-				<td>{train.date}</td>
-				<td>{train.pulsemin}</td>
-				<td>{train.pulsemax}</td>
-				<td>{train.distance}</td>
-				</tr>)}
-			</tbody>
-			</Table>
-			</Modal.Body>
-			<Modal.Footer>
-				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(false)}>Закрыть</Button>
-			</Modal.Footer>
-		</Modal>
-		{/* Модальное окно - Достижения */}
-		<Modal 
-			show={showAchiv} 
-			onHide={() => setShowAchiv(false)} 
-			aria-labelledby="contained-modal-title-vcenter"
-			centered>
-			<Modal.Header closeButton>
-				<Modal.Title>
-				<h4>Достижения</h4>
-				<h6>{currentSportsman.name}</h6>
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-			<Table striped bordered hover className="justify-content-start table-size">
-			<tbody>
-				<tr>
-				<td colSpan={2}>Дистанция, км</td>
-				<td>{currentSportsman.distance}</td>
-				</tr>
-				<tr>
-				<td colSpan={2}>Тренировки</td>
-				<td>{currentSportsman.tquantity}</td>
-				</tr>
-				<tr>
-				<td colSpan={2}>Врема, мин</td>
-				<td>{currentSportsman.time}</td>
-				</tr>
-				<tr>
-				<td colSpan={2}>Средний пульс</td>
-				<td>{currentSportsman.avepulse}</td>
-				</tr>
-			</tbody>
-			</Table>
-			</Modal.Body>
-			<Modal.Footer>
-				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(false)}>Закрыть</Button>
-			</Modal.Footer>
-		</Modal>
-		{/* Модальное окно - Информация о тренировке */}
-		<Modal 
-			show={showTraining} 
-			onHide={() => setShowTraining(false)} 
-			aria-labelledby="contained-modal-title-vcenter"
-			centered>
-			<Modal.Header closeButton>
-				<Modal.Title>
-				<h4>Информация о тренировке</h4>
-				<h6>{currentTrain.name}</h6>
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-			<div className='table-scroll mb-2'>
-				<Table striped bordered hover className="justify-content-start" >
-				<thead>
-					<tr>
-					<th>Время, сек</th>
-					<th>Пульс (мин)</th>
-					<th>Пульс (макс)</th>
-					</tr>
-				</thead>
-				<tbody>
-					{currentTrain.rows.map(row => <tr>
-					<td>{row.time}</td>
-					<td>{row.pulsemin}</td>
-					<td>{row.pulsemax}</td>
-					</tr>)}
-				</tbody>
-				</Table>
-			</div>
-			</Modal.Body>
-			<Modal.Footer>
-				<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(false)}>Закрыть</Button>
-			</Modal.Footer>
-		</Modal>
-		{/* Модальное окно - Сохранение тренировки */}
-		<Modal
-			show={showSave}
-			onHide={() => setShowSave(false)}
-			centered>
-			<Modal.Header closeButton>
-				<Modal.Title>
-					Сохранение
-				</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-				Вы уверены, что хотите завершить тренировку?
-			</Modal.Body>
-			<Modal.Footer className='justify-content-between'>
-				<Button variant='outline-primary' className='shadow-lg' onClick={() => setShowSave(false)}>Отмена</Button>
-				<Button variant='danger' className='shadow-lg' onClick={() => {setShowSave(false); handleStopClick();}}>Начать заново</Button>
-				<Button variant="success" className='shadow-lg' onClick={() => {handleStopClick(); setShowSave(false); setShowStat(true);}}>Сохранить</Button>
-			</Modal.Footer>
-		</Modal>
-		{/* Модальное окно - Статистика после тренировки */}
-		<Modal
-			show={showStat}
-			onHide={() => setShowStat(false)}
-			centered>
-		<Modal.Header closeButton>
-			<Modal.Title>
-				Результаты тренировки
-			</Modal.Title>
-		</Modal.Header>
-		<Modal.Body>
-			<Table striped bordered hover className="justify-content-start">
-			<tbody>
-				<tr>
-				<td className='col-md-3'>Дистанция (м)</td>
-				<td colSpan={2} id='name'>{totalDist}</td>
-				</tr>
-				<tr>
-				<td>Время (мин)</td>
-				<td colSpan={2} id='age'>{(time / 1000 / 60).toFixed(2)}</td>
-				</tr>
-				<tr>
-				<td>Пульс (мин)</td>
-				<td colSpan={2} id='size'>{minPulse}</td>
-				</tr>
-				<tr>
-				<td>Пульс (макс)</td>
-				<td colSpan={2} id='weight'>{maxPulse}</td>
-				</tr>
-			</tbody>
-			</Table>
-		</Modal.Body>
-		<Modal.Footer>
-			<Button variant='danger' className='shadow-lg' onClick={() => setShowStat(false)}>Удалить</Button>
-			<Button variant='success' className='shadow-lg'>Сохранить</Button>
-		</Modal.Footer>
-		</Modal>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - История тренировок */}
+			<Modal
+				show={showHistory}
+				onHide={() => setShowHistory(false)}
+				aria-labelledby="contained-modal-title-vcenter"
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						<h4>История тренировок</h4>
+						<h6>{currentSportsman.name}</h6>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body className='table-scroll-sm'>
+					<Table striped bordered hover>
+						<thead>
+							<tr>
+								<th>Дата</th>
+								<th>Пульс (мин)</th>
+								<th>Пульс (макс)</th>
+								<th>Дистанция, м</th>
+							</tr>
+						</thead>
+						<tbody>
+							{currentSportsman.trains.map(train => <tr>
+								<td>{train.date}</td>
+								<td>{train.pulsemin}</td>
+								<td>{train.pulsemax}</td>
+								<td>{train.distance}</td>
+							</tr>)}
+						</tbody>
+					</Table>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowHistory(false)}>Закрыть</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - Достижения */}
+			<Modal
+				show={showAchiv}
+				onHide={() => setShowAchiv(false)}
+				aria-labelledby="contained-modal-title-vcenter"
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						<h4>Достижения</h4>
+						<h6>{currentSportsman.name}</h6>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<Table striped bordered hover className="justify-content-start table-size">
+						<tbody>
+							<tr>
+								<td colSpan={2}>Дистанция, км</td>
+								<td>{currentSportsman.distance}</td>
+							</tr>
+							<tr>
+								<td colSpan={2}>Тренировки</td>
+								<td>{currentSportsman.tquantity}</td>
+							</tr>
+							<tr>
+								<td colSpan={2}>Врема, мин</td>
+								<td>{currentSportsman.time}</td>
+							</tr>
+							<tr>
+								<td colSpan={2}>Средний пульс</td>
+								<td>{currentSportsman.avepulse}</td>
+							</tr>
+						</tbody>
+					</Table>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowAchiv(false)}>Закрыть</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - Информация о тренировке */}
+			<Modal
+				show={showTraining}
+				onHide={() => setShowTraining(false)}
+				aria-labelledby="contained-modal-title-vcenter"
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						<h4>Информация о тренировке</h4>
+						<h6>{currentTrain.name}</h6>
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<div className='table-scroll mb-2'>
+						<Table striped bordered hover className="justify-content-start" >
+							<thead>
+								<tr>
+									<th>Время, сек</th>
+									<th>Пульс (мин)</th>
+									<th>Пульс (макс)</th>
+								</tr>
+							</thead>
+							<tbody>
+								{currentTrain.rows.map(row => <tr>
+									<td>{row.time}</td>
+									<td>{row.pulsemin}</td>
+									<td>{row.pulsemax}</td>
+								</tr>)}
+							</tbody>
+						</Table>
+					</div>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant="outline-primary" className='shadow-lg' onClick={() => setShowTraining(false)}>Закрыть</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - Сохранение тренировки */}
+			<Modal
+				show={showSave}
+				onHide={() => setShowSave(false)}
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						Сохранение
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					Вы уверены, что хотите завершить тренировку?
+				</Modal.Body>
+				<Modal.Footer className='justify-content-between'>
+					<Button variant='outline-primary' className='shadow-lg' onClick={() => setShowSave(false)}>Отмена</Button>
+					<Button variant='danger' className='shadow-lg' onClick={() => { setShowSave(false); handleStopClick(); }}>Начать заново</Button>
+					<Button variant="success" className='shadow-lg' onClick={() => { handleStopClick(); setShowSave(false); setShowStat(true); }}>Сохранить</Button>
+				</Modal.Footer>
+			</Modal>
+			{/* Модальное окно - Статистика после тренировки */}
+			<Modal
+				show={showStat}
+				onHide={() => setShowStat(false)}
+				centered>
+				<Modal.Header closeButton>
+					<Modal.Title>
+						Результаты тренировки
+					</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>
+					<Table striped bordered hover className="justify-content-start">
+						<tbody>
+							<tr>
+								<td>Дистанция (м)</td>
+								<td colSpan={2} id='name'>{totalDist.toFixed(2)}</td>
+							</tr>
+							<tr>
+								<td>Время (мин)</td>
+								<td colSpan={2} id='age'>{(time / 1000 / 60).toFixed(2)}</td>
+							</tr>
+							<tr>
+								<td>Пульс (мин)</td>
+								<td colSpan={2} id='size'>{minPulse}</td>
+							</tr>
+							<tr>
+								<td>Пульс (макс)</td>
+								<td colSpan={2} id='weight'>{maxPulse}</td>
+							</tr>
+						</tbody>
+					</Table>
+				</Modal.Body>
+				<Modal.Footer>
+					<Button variant='danger' className='shadow-lg' onClick={() => setShowStat(false)}>Удалить</Button>
+					<Button variant='success' className='shadow-lg' onClick={() => setShowStat(false)}>Сохранить</Button>
+				</Modal.Footer>
+			</Modal>
 		</Container>
 	)
 }
 
 class StartWorkout extends React.Component {
 	render() {
-		return (<StartWorkoutWin/>)
+		return (<StartWorkoutWin />)
 	}
 }
 
