@@ -17,4 +17,4 @@
 
 ## Диаграмма вариантов использования приложения (use-case)
 
-![use-case](./use-case.pdf)
+![use-case](./use-case.png)
